@@ -24,17 +24,17 @@
     />
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="{% static '/assets/css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}" />
   </head>
   <body>
     <!-- SIDEBAR -->
     <nav id="sidebar" class="sidebar">
       <div class="brand d-flex align-items-center gap-2 px-2">
         <img
-          src="{% static '/assets/img/sidebar1.png' %}"
+          src=""
           class="full-logo"
         /><img
-          src="{% static '/assets/img/sidebar.png' %}"
+          src=""
           class="small-logo"
         />
       </div>
@@ -111,13 +111,13 @@
     {% block content %} {% endblock %}
 
     <div id="overlay" class="overlay"></div>
-    <script src="{% static '/assets/js/attendance.js' %}"></script>
+    <script src="{% static 'assets/js/attendance.js' %}"></script>
 
     {% comment %}
-    <script src="{% static '/assets/js/hr-employee.js' %}"></script>
+    <script src="{% static 'assets/js/hr-employee.js' %}"></script>
     {% endcomment %}
 
-    <script src="{% static '/assets/js/announcement.js' %}"></script>
+    <script src="{% static 'assets/js/announcement.js' %}"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- ===========================

@@ -16,7 +16,12 @@ SECRET_KEY = 'django-insecure-gt^#p6*v@oc5wzb*)a^rq$-=i^(3aq0&=3mm%!!s2^tav7zj4$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['testserver', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ["31.97.203.68", "hr360.kavyainfoweb.com", "localhost", "127.0.0.1"]
+CSRF_TRUSTED_ORIGINS = [
+    "http://31.97.203.68:8878",
+    "http://31.97.203.68",
+    "http://hr360.kavyainfoweb.com",
+]
 
 
 # Application definitionm,
@@ -68,14 +73,11 @@ WSGI_APPLICATION = 'hrms.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'hrmsportal',  # Your database name
-        'USER': 'root',           # XAMPP MySQL default user
-        'PASSWORD': '',           # XAMPP MySQL default password (empty)
-        'HOST': '127.0.0.1',      # localhost
-        'PORT': '3306',           # MySQL default port
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
+        'NAME': 'hr360',
+        'USER': 'hr360user',
+        'PASSWORD': 'Hr360@123',
+        'HOST': 'db',
+        'PORT': '3306',
     }
 }
 

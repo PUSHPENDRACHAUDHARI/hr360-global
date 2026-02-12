@@ -1,0 +1,143 @@
+{% extends "app/base4.html" %}
+{% load static %}
+{% block content %}
+
+<main class="content-wrap">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="d-flex justify-content-between mb-3"
+        style="background:#fff;border:1px solid #e5e7eb;padding:12px 18px;border-radius:6px;">
+        <div class="page-title">Leave Management</div>
+    </div>
+
+    <!-- ===== STATS CARDS ===== -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-layer-group fa-2x mb-2" style="color:#0b7368;"></i>
+                    <h3 class="fw-bold">{{ total_requests }}</h3>
+                    <p class="text-muted mb-0">Total Requests</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                    <h3 class="fw-bold">{{ pending_requests }}</h3>
+                    <p class="text-muted mb-0">Pending</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-user-check fa-2x text-info mb-2"></i>
+                    <h3 class="fw-bold">{{ tl_approved }}</h3>
+                    <p class="text-muted mb-0">TL Approved</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                    <h3 class="fw-bold">{{ hr_approved }}</h3>
+                    <p class="text-muted mb-0">HR Approved</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== LEAVE TABLE (ALL FIELDS SAME) ===== -->
+    <div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:20px;">
+        <table class="table table-bordered align-middle">
+            <thead style="background:#f0fdfa;">
+                <tr>
+                    <th>#</th>
+                    <th>Employee</th>
+                    <th>Team Lead</th>
+                    <th>HR Approver</th>
+                    <th>Leave Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Submitted On</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for leave in leave_requests %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+
+                    <td>
+                        {{ leave.employee.first_name }}
+                        {{ leave.employee.last_name }}
+                    </td>
+
+                    <td>
+                        {% if leave.team_lead %}
+                            {{ leave.team_lead.employee.first_name }}
+                            {{ leave.team_lead.employee.last_name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if leave.hr_approver %}
+                            {{ leave.hr_approver.full_name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>{{ leave.leave_type }}</td>
+
+                    <td>{{ leave.start_date }}</td>
+                    <td>{{ leave.end_date }}</td>
+
+                    <td>
+                        {% if leave.status == "pending" %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        {% elif leave.status == "tl_approved" %}
+                            <span class="badge bg-info">TL Approved</span>
+                        {% elif leave.status == "hr_approved" %}
+                            <span class="badge bg-success">HR Approved</span>
+                        {% elif leave.status == "rejected" %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ leave.created_at|date:"d M Y H:i" }}</td>
+
+                    <td>
+                        <a href="{% url 'pm-leave-view' leave.id %}"
+                           class="btn btn-sm btn-outline-success">
+                            View
+                        </a>
+                    </td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center text-muted">
+                        No leave requests found
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+{% endblock %}

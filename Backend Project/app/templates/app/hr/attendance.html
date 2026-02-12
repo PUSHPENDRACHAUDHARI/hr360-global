@@ -1,0 +1,215 @@
+{% extends "app/base.html" %}
+{% block content %}
+
+<!-- CONTENT -->
+ 
+<main class="content-wrap"><div class="d-flex justify-content-between mb-3" style="background:#fff;border:1px solid #e5e7eb;padding:10px 15px;border-radius:4px;"><div class="page-title">Attendance Management</div><a href="{% url 'hr-dashboard' %}"><div class="text-muted">Dashboard</div></a></div><!-- DYNAMIC STATISTICS CARDS --><div style="display:flex; gap:20px; flex-wrap:wrap; margin:20px 0; font-family:Poppins, sans-serif;"><!-- CARD 1 - Total Employees --><div style="flex:1; min-width:220px; background:#ffffff; border-radius:10px;
+                border-top:6px solid #0a6d65; padding:25px; text-align:center;
+                box-shadow:0px 2px 6px rgba(0,0,0,0.08);"><div style="font-size:38px; color:#1a73e8; margin-bottom:8px;"><i class="fa-solid fa-people-group"></i></div><div style="font-size:32px; font-weight:700; color:#000;">{{ total_employees }}</div><div style="font-size:15px; color:#666; margin-top:4px;">Total Employees</div></div><!-- CARD 2 - Present Today --><div style="flex:1; min-width:220px; background:#ffffff; border-radius:10px;
+                border-top:6px solid #0a6d65; padding:25px; text-align:center;
+                box-shadow:0px 2px 6px rgba(0,0,0,0.08);"><div style="font-size:38px; color:#0f8f5c; margin-bottom:8px;"><i class="fa-solid fa-calendar-check"></i></div><div style="font-size:32px; font-weight:700; color:#000;">{{ present_today }}</div><div style="font-size:15px; color:#666; margin-top:4px;">
+            Present Today
+            {% if is_filtered %}(Filtered){% endif %}
+        </div></div><!-- CARD 3 - Absent Today --><div style="flex:1; min-width:220px; background:#ffffff; border-radius:10px;
+                border-top:6px solid #0a6d65; padding:25px; text-align:center;
+                box-shadow:0px 2px 6px rgba(0,0,0,0.08);"><div style="font-size:38px; color:#e63946; margin-bottom:8px;"><i class="fa-solid fa-calendar-xmark"></i></div><div style="font-size:32px; font-weight:700; color:#000;">{{ absent_today }}</div><div style="font-size:15px; color:#666; margin-top:4px;">
+            Absent Today
+            {% if is_filtered %}(Filtered){% endif %}
+        </div></div><!-- CARD 4 - Attendance Rate --><div style="flex:1; min-width:220px; background:#ffffff; border-radius:10px;
+                border-top:6px solid #0a6d65; padding:25px; text-align:center;
+                box-shadow:0px 2px 6px rgba(0,0,0,0.08);"><div style="font-size:38px; color:#06b6d4; margin-bottom:8px;"><i class="fa-solid fa-percent"></i></div><div style="font-size:32px; font-weight:700; color:#000;">{{ attendance_rate }}%</div><div style="font-size:15px; color:#666; margin-top:4px;">
+            Attendance Rate
+            {% if is_filtered %}(Filtered){% endif %}
+        </div></div></div><!-- FILTERS AND ACTIONS --><div style="border:2px solid #0b7368; border-radius:10px; padding:20px;
+              font-family:Poppins, sans-serif; margin:20px 0;"><form method="GET" id="filterForm"><div style="display:flex; flex-wrap:wrap; align-items:center; gap:25px;"><!-- Select Date --><div style="display:flex; flex-direction:column;"><label style="font-weight:600; color:#333; font-size:14px;">Select Date</label><input type="date" name="date" value="{{ selected_date }}" 
+                       style="padding:10px 15px; width:220px; border:1px solid #ddd;
+                              border-radius:6px; outline:none; font-size:14px;"
+                       onchange="document.getElementById('filterForm').submit();" /></div><!-- Department --><div style="display:flex; flex-direction:column;"><label style="font-weight:600; color:#333; font-size:14px;">Department</label><select name="department" style="padding:10px 15px; width:220px; border:1px solid #ddd;
+                       border-radius:6px; outline:none; font-size:14px;"
+                       onchange="document.getElementById('filterForm').submit();"><option value="all" {% if selected_department == 'all' %}selected{% endif %}>All Departments</option>
+                    {% for dept in departments %}
+                        <option value="{{ dept }}" {% if selected_department == dept %}selected{% endif %}>{{ dept|default:"Unassigned" }}</option>
+                    {% endfor %}
+                </select></div><!-- SEARCH BOX WITH ICON INSIDE --><div style="display:flex; flex-direction:column; position:relative;"><label style="font-weight:600; color:#333; font-size:14px;">Search</label><input type="text" name="search" value="{{ search_term }}" placeholder="Search by name or employee ID..."
+                       style="padding:10px 45px 10px 15px; width:220px; border:1px solid #ddd;
+                              border-radius:6px; outline:none; font-size:14px;" /><!-- Icon inside box (Right side) --><i class="fa-solid fa-magnifying-glass"
+                   style="position:absolute; right:12px; top:38px; color:#777;
+                          font-size:14px;"></i></div><!-- Action Buttons --><div style="margin-left:auto; display:flex; gap:12px;"><!-- Filter Button --><button type="submit" 
+                        style="background:#0b7368; color:#fff; border:none;
+                               padding:10px 22px; border-radius:6px; font-size:14px;"><i class="fa-solid fa-filter"></i> Apply Filter
+                </button><!-- Clear Filter Button -->
+                {% if is_filtered %}
+                <a href="{% url 'attendance' %}" 
+                   style="background:#6c757d; color:#fff; border:none;
+                          padding:10px 22px; border-radius:6px; font-size:14px; text-decoration:none; display:inline-block;"><i class="fa-solid fa-times"></i> Clear Filters
+                </a>
+                {% endif %}
+
+                <!-- Export Button --><button type="button" onclick="exportAttendance()" 
+                        style="background:#34a853; color:#fff; border:none;
+                               padding:10px 22px; border-radius:6px; font-size:14px;"><i class="fa-solid fa-download"></i> Export
+                </button><!-- Report Button --><button type="button" onclick="generateReport()" 
+                        style="background:#1a73e8; color:#fff; border:none;
+                               padding:10px 22px; border-radius:6px; font-size:14px;"><i class="fa-solid fa-file-lines"></i> Report
+                </button></div></div></form></div><!-- ATTENDANCE TABLE --><div style="background:#ffffff; border-radius:10px; box-shadow:0px 2px 6px rgba(0,0,0,0.08); 
+              border:1px solid #e5e7eb; overflow:hidden; margin-top:20px;"><!-- Table Header --><div style="padding:20px; border-bottom:1px solid #e5e7eb;background-color: #0a6d65;"><div style="display:flex; justify-content:space-between; align-items:center;"><h5 style="margin:0; font-weight:600; color:#f5f3f3;"><i class="fa-solid fa-table me-2"></i>
+                Employee Attendance Records
+                {% if is_filtered %}
+                    <small style="font-size:12px; opacity:0.8;">(Filtered Results)</small>
+                {% endif %}
+            </h5><div style="color:#f5f3f3; font-size:14px;">
+                {% if is_filtered %}
+                    Showing {{ attendance_records.count }} records for {{ filter_date|date:"M d, Y" }}
+                {% else %}
+                    Today's Records ({{ attendance_records.count }} employees)
+                {% endif %}
+            </div></div></div><!-- Responsive Table --><div class="table-responsive"><table class="table table-hover mb-0" style="font-family:Poppins, sans-serif;"><thead style="background:#f8f9fa;"><tr><th class="px-4 py-3" style="font-weight:600; color:#333; font-size:14px;">Employee ID</th><th class="px-4 py-3" style="font-weight:600; color:#333; font-size:14px;">Name</th><th class="px-4 py-3" style="font-weight:600; color:#333; font-size:14px;">Department</th><th class="px-4 py-3" style="font-weight:600; color:#333; font-size:14px;">Date</th><th class="px-4 py-3" style="font-weight:600; color:#333; font-size:14px;">Check In</th><th class="px-4 py-3" style="font-weight:600; color:#333; font-size:14px;">Check Out</th><th class="px-4 py-3" style="font-weight:600; color:#333; font-size:14px;">Working Hours</th><th class="px-4 py-3" style="font-weight:600; color:#333; font-size:14px;">Status</th><th class="px-4 py-3" style="font-weight:600; color:#333; font-size:14px;">Action</th></tr></thead><tbody>
+                {% if attendance_records %}
+                    {% for record in attendance_records %}
+                        <tr><td class="px-4 py-3" style="font-size:14px; color:#333;">{{ record.employee.company_id }}</td><td class="px-4 py-3" style="font-size:14px; color:#333;">
+                                {{ record.employee.first_name }} {{ record.employee.last_name }}
+                            </td><td class="px-4 py-3" style="font-size:14px; color:#666;">
+                                {{ record.employee.department|default:"Unassigned" }}
+                            </td><td class="px-4 py-3" style="font-size:14px; color:#333;">
+                                {{ record.attendance_date|date:"Y-m-d" }}
+                            </td><td class="px-4 py-3" style="font-size:14px; color:#333;">
+                                {% if record.check_in_time %}
+                                    {{ record.check_in_time|time:"H:i" }}
+                                {% else %}
+                                    <span style="color:#999;">--</span>
+                                {% endif %}
+                            </td><td class="px-4 py-3" style="font-size:14px; color:#333;">
+                                {% if record.check_out_time %}
+                                    {{ record.check_out_time|time:"H:i" }}
+                                {% else %}
+                                    <span style="color:#999;">--</span>
+                                {% endif %}
+                            </td><td class="px-4 py-3" style="font-size:14px; color:#333;">
+                                {% if record.total_worked_hours %}
+                                    {{ record.total_worked_hours|floatformat:1 }}h
+                                {% else %}
+                                    <span style="color:#999;">--</span>
+                                {% endif %}
+                            </td><td class="px-4 py-3">
+                                {% if record.status == 'present' %}
+                                    <span class="badge bg-success">Present</span>
+                                {% elif record.status == 'half_day' %}
+                                    <span class="badge bg-warning text-dark">Half Day</span>
+                                {% elif record.status == 'late' %}
+                                    <span class="badge bg-warning text-dark">Late</span>
+                                {% elif record.status == 'absent' %}
+                                    <span class="badge bg-danger">Absent</span>
+                                {% elif record.status == 'leave' %}
+                                    <span class="badge bg-info">On Leave</span>
+                                {% elif record.status == 'holiday' %}
+                                    <span class="badge bg-secondary">Holiday</span>
+                                {% elif record.status == 'weekend' %}
+                                    <span class="badge bg-secondary">Weekend</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ record.status|title }}</span>
+                                {% endif %}
+                            </td><td class="px-4 py-3"><button class="btn btn-sm btn-outline-primary me-1" 
+                                        onclick="viewAttendanceDetails({{ record.id }})"
+                                        title="View Details"><i class="fas fa-eye"></i></button>
+                                {% if record.status in 'late' %}
+                                    <span class="badge bg-warning text-dark ms-1">Late</span>
+                                {% endif %}
+                            </td></tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="9" class="text-center py-5"><i class="fas fa-calendar-times mb-3" style="font-size:3rem; color:#dee2e6;"></i><div class="text-muted mb-2">
+                                {% if is_filtered %}
+                                    No attendance records found for the selected criteria
+                                {% else %}
+                                    No attendance records found for today
+                                {% endif %}
+                            </div><small class="text-muted">
+                                {% if is_filtered %}
+                                    Try adjusting your filters or select a different date
+                                {% else %}
+                                    Employees haven't checked in yet or no records exist
+                                {% endif %}
+                            </small></td></tr>
+                {% endif %}
+            </tbody></table></div><!-- Table Footer with Summary -->
+    {% if attendance_records %}
+    <div style="padding:15px 20px; border-top:1px solid #e5e7eb; background-color:#f8f9fa;"><div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; color:#666;"><div><strong>Summary:</strong>
+                Present: {{ present_today }} | 
+                Absent: {{ absent_today }} | 
+                Total: {{ total_employees }} | 
+                Rate: {{ attendance_rate }}%
+            </div><div><small>Last updated: {% now "Y-m-d H:i:s" %}</small></div></div></div>
+    {% endif %}
+  </div><!-- Department Statistics (if available) -->
+  {% if dept_attendance %}
+  <div style="background:#ffffff; border-radius:10px; box-shadow:0px 2px 6px rgba(0,0,0,0.08); 
+              border:1px solid #e5e7eb; overflow:hidden; margin-top:20px;"><div style="padding:20px; border-bottom:1px solid #e5e7eb;background-color: #0a6d65;"><h5 style="margin:0; font-weight:600; color:#f5f3f3;"><i class="fa-solid fa-chart-pie me-2"></i>
+              Department-wise Attendance Summary
+          </h5></div><div style="padding:20px;"><div class="row">
+              {% for dept in dept_attendance %}
+                  {% if dept.employee__department %}
+                  <div class="col-md-4 mb-3"><div style="border:1px solid #e5e7eb; border-radius:8px; padding:15px;"><h6 style="margin:0 0 10px 0; color:#333;">{{ dept.employee__department }}</h6><div style="font-size:24px; font-weight:700; color:#0b7368;">
+                              {{ dept.present_count }}/{{ dept.total_count }}
+                          </div><div style="font-size:12px; color:#666;">
+                              {% if dept.total_count > 0 %}
+                                  Attendance Rate: {% widthratio dept.present_count dept.total_count 100 %}%
+                              {% else %}
+                                  No Records
+                              {% endif %}
+                          </div></div></div>
+                  {% endif %}
+              {% endfor %}
+          </div></div></div>
+  {% endif %}
+
+</main><!-- ATTENDANCE DETAILS MODAL --><div class="modal fade" id="attendanceDetailsModal" tabindex="-1" aria-labelledby="attendanceDetailsModalLabel" aria-hidden="true"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content" style="border:none; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.15);"><div class="modal-header" style="background:linear-gradient(135deg, #0a6d65 0%, #1a7370 100%); color:white; border-radius:15px 15px 0 0; border:none;"><h5 class="modal-title fw-bold" id="attendanceDetailsModalLabel"><i class="fas fa-calendar-check me-2"></i>Attendance Details
+                </h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body p-4"><div id="modalContent"><!-- Content will be populated by JavaScript --></div></div><div class="modal-footer border-0 pt-0"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal" 
+                        style="border-radius:8px; padding:8px 20px; font-weight:500;">
+                    Close
+                </button></div></div></div></div><script>
+// View attendance details
+function viewAttendanceDetails(recordId) {
+    // This would typically make an AJAX call to get detailed information
+    // For now, we'll show a simple alert
+    const modalContent = document.getElementById('modalContent');
+    modalContent.innerHTML = `
+        <div class="text-center"><i class="fas fa-spinner fa-spin fa-2x mb-3" style="color:#0a6d65;"></i><div>Loading attendance details...</div></div>
+    `;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('attendanceDetailsModal'));
+    modal.show();
+    
+    // In a real implementation, you would fetch details via AJAX
+    setTimeout(() => {
+        modalContent.innerHTML = `
+            <div class="row"><div class="col-md-6"><h6>Employee Information</h6><p><strong>Record ID:</strong> ${recordId}</p><p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p><p><strong>Status:</strong> Present</p></div><div class="col-md-6"><h6>Time Details</h6><p><strong>Check In:</strong> 09:00 AM</p><p><strong>Check Out:</strong> 06:00 PM</p><p><strong>Working Hours:</strong> 9.0 hours</p></div></div>
+        `;
+    }, 1000);
+}
+
+// Export attendance data
+function exportAttendance() {
+    // Get current filters
+    const params = new URLSearchParams(window.location.search);
+    const date = params.get('date') || '{{ today|date:"Y-m-d" }}';
+    const department = params.get('department') || 'all';
+    const search = params.get('search') || '';
+    
+    // Create export URL with filters
+    let exportUrl = `/hr/attendance-export/?date=${date}`;
+    if (department !== 'all') exportUrl += `&department=${department}`;
+    if (search) exportUrl += `&search=${encodeURIComponent(search)}`;
+    
+    // Trigger download
+    window.open(exportUrl, '_blank');
+}
+
+// Generate report
+function generateReport() {
+    alert('Attendance report generation feature will be implemented with PDF/Excel export.');
+    // In a real implementation, this would generate a comprehensive report
+}
+</script>
+
+{% endblock %}

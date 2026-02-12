@@ -1,0 +1,190 @@
+{% extends "app/base4.html" %}
+{% load static %}
+{% block content %}
+
+<main class="content-wrap p-3">
+
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between mb-3"
+        style="background:#fff;border:1px solid #e5e7eb;padding:12px 18px;border-radius:6px;">
+        <div class="page-title fw-bold">Project Management</div>
+    </div>
+
+    <!-- CARDS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3 text-center" style="height:130px;">
+                <i class="fas fa-folder-open fa-2x mb-2" style="color:yellowgreen;"></i>
+                <h6>Total Projects</h6>
+                <h3 class="text-teal">{{ total_projects }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3 text-center" style="height:130px;">
+                <i class="fas fa-user-tie fa-2x mb-2" style="color:skyblue;"></i>
+                <h6>Total Team Leads</h6>
+                <h3 class="text-teal">{{ total_team_leads }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3 text-center" style="height:130px;">
+                <i class="fas fa-users fa-2x mb-2" style="color:crimson;"></i>
+                <h6>Total Employees</h6>
+                <h3 class="text-teal">{{ total_employees }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH + ENTRIES -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <label class="me-1 fw-semibold">Show</label>
+            <select id="entries" class="form-select d-inline-block w-auto">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="15">15</option>
+            </select>
+            entries
+        </div>
+
+        <div>
+            <input type="text" id="searchBox" class="form-control" placeholder="Search project / code / team lead"
+                style="width:260px;">
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead style="background:#034141;color:white;">
+                <tr>
+                    <th>#</th>
+                    <th>Project Code</th>
+                    <th>Project Name</th>
+                    <th>Team Lead</th>
+                    <th>Members</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Priority</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                {% for p in projects %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ p.project_code }}</td>
+                    <td>{{ p.project_name }}</td>
+                    <td>{{ p.team_leader.employee.first_name }} {{ p.team_leader.employee.last_name }}</td>
+                    <td>
+                        {% for m in p.team_members.all %}
+                        <span class="badge bg-secondary">{{ m.first_name }}</span>
+                        {% empty %} No members {% endfor %}
+                    </td>
+                    <td>{{ p.start_date }}</td>
+                    <td>{{ p.end_date }}</td>
+                    <td>
+                        <span class="badge" style="background:#0b7368;">{{ p.priority }}</span>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'team-lead-details' p.team_leader.id %}">
+                            <i class="fas fa-eye fa-lg text-teal"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGINATION BOTTOM RIGHT -->
+    <div class="d-flex justify-content-end mt-3">
+        <ul class="pagination pagination-sm" id="pagination"></ul>
+    </div>
+
+</main>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const rows = Array.from(document.querySelectorAll("#tableBody tr"));
+        const pagination = document.getElementById("pagination");
+        const searchBox = document.getElementById("searchBox");
+        const entries = document.getElementById("entries");
+
+        let currentPage = 1;
+        let rowsPerPage = parseInt(entries.value);
+        let filteredRows = [...rows];
+
+        function renderTable() {
+            rows.forEach(r => r.style.display = "none");
+
+            let start = (currentPage - 1) * rowsPerPage;
+            let end = start + rowsPerPage;
+
+            filteredRows.slice(start, end).forEach(r => r.style.display = "");
+        }
+
+        function renderPagination() {
+            pagination.innerHTML = "";
+            let totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+            pagination.innerHTML += `
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="prev">&laquo;</a>
+            </li>`;
+
+            for (let i = 1; i <= totalPages; i++) {
+                pagination.innerHTML += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" data-page="${i}">${i}</a>
+                </li>`;
+            }
+
+            pagination.innerHTML += `
+            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="next">&raquo;</a>
+            </li>`;
+        }
+
+        pagination.addEventListener("click", e => {
+            e.preventDefault();
+            if (!e.target.dataset.page) return;
+
+            let totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+            if (e.target.dataset.page === "prev" && currentPage > 1) currentPage--;
+            else if (e.target.dataset.page === "next" && currentPage < totalPages) currentPage++;
+            else currentPage = parseInt(e.target.dataset.page);
+
+            renderTable();
+            renderPagination();
+        });
+
+        searchBox.addEventListener("keyup", () => {
+            let value = searchBox.value.toLowerCase();
+            filteredRows = rows.filter(row =>
+                row.innerText.toLowerCase().includes(value)
+            );
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        });
+
+        entries.addEventListener("change", () => {
+            rowsPerPage = parseInt(entries.value);
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        });
+
+        renderTable();
+        renderPagination();
+    });
+</script>
+{% endblock %}

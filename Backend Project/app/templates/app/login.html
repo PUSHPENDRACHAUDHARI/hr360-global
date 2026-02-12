@@ -1,0 +1,290 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global HR Portal - Login</title>
+  {% csrf_token %}
+  <meta name="csrf-token" content="{{ csrf_token }}" />
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary-color: #003838;
+      --secondary-color: #045757;
+      --accent-color: #0b7368;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --danger-color: #e74c3c;
+      --info-color: #3498db;
+      --bg-gradient: linear-gradient(135deg,#003838 0%,#045757 50%,#0b7368 100%);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      max-width: 900px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      animation: slideUp .8s ease;
+    }
+
+    @keyframes slideUp {
+      from {opacity:0; transform:translateY(40px);}
+      to {opacity:1; transform:translateY(0);}
+    }
+
+    /* LEFT */
+    .login-left {
+      background: var(--bg-gradient);
+      color: #fff;
+      padding: 40px 30px;
+      text-align: center;
+    }
+
+    .company-logo img {
+      width: 300px;
+      height: 300px;
+      object-fit: contain;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: .95rem;
+    }
+
+    .feature-item i {
+      color: #4caf50;
+      margin-right: 10px;
+    }
+
+    /* RIGHT */
+    .login-right {
+      padding: 40px 30px;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .role-cards {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .role-card {
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 18px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: .3s;
+    }
+
+    .role-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .role-card.selected {
+      background: var(--accent-color);
+      color: #fff;
+      border-color: var(--accent-color);
+    }
+
+    .role-card input {
+      display: none;
+    }
+
+    .role-icon {
+      font-size: 2rem;
+      margin-bottom: 6px;
+    }
+
+    .hr .role-icon {color: var(--danger-color);}
+    .employee .role-icon {color: var(--success-color);}
+    .tl .role-icon {color: var(--warning-color);}
+    .pm .role-icon {color: var(--info-color);}
+
+    .role-card.selected .role-icon {
+      color: #fff;
+    }
+
+    .form-control {
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 15px;
+    }
+
+    .login-btn {
+      width: 100%;
+      background: var(--bg-gradient);
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    /* 🔥 MOBILE VIEW FIX */
+    @media (max-width: 768px) {
+
+      /* left hide */
+      .login-left {
+        display: none !important;
+      }
+
+      .login-card {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+      }
+
+      .login-right {
+        padding: 30px 20px;
+      }
+
+      /* role = 2 by 2 */
+      .role-cards {
+        grid-template-columns: repeat(2,1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-right {
+        padding: 25px 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="login-container">
+  <div class="login-card">
+
+    <!-- LEFT -->
+    <div class="login-left">
+      <div class="company-logo">
+        <img src="{% static 'assets/img/mainimg.png' %}" alt="Company">
+      </div>
+      <p class="mt-3">Global HR Management System</p>
+
+     <div class="mt-4" style="text-align:center;">
+  
+  <div class="feature-item" style="display:flex;justify-content:center;align-items:center;margin-bottom:10px;">
+    <i class="fas fa-check-circle" style="margin-right:8px;"></i>
+    <span>Secure Role Based Access</span>
+  </div>
+
+  <div class="feature-item" style="display:flex;justify-content:center;align-items:center;margin-bottom:10px;">
+    <i class="fas fa-check-circle" style="margin-right:8px;"></i>
+    <span>Employee Management</span>
+  </div>
+
+  <div class="feature-item" style="display:flex;justify-content:center;align-items:center;">
+    <i class="fas fa-check-circle" style="margin-right:8px;"></i>
+    <span>Project & Team Control</span>
+  </div>
+
+</div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="login-right">
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-danger text-center">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="form-header">
+        <h3>Welcome Back</h3>
+        <p>Please login to continue</p>
+      </div>
+
+      <form id="loginForm" method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <!-- ROLES -->
+        <label class="fw-bold mb-2">Select Role *</label>
+        <div class="role-cards">
+
+          <div class="role-card hr" data-role="hr">
+            <input type="radio" name="role" id="role-hr" value="hr">
+            <i class="fas fa-user-shield role-icon"></i>
+            <div>HR</div>
+          </div>
+
+          <div class="role-card employee" data-role="employee">
+            <input type="radio" name="role" id="role-employee" value="employee">
+            <i class="fas fa-user role-icon"></i>
+            <div>Employee</div>
+          </div>
+
+          <div class="role-card tl" data-role="tl">
+            <input type="radio" name="role" id="role-tl" value="tl">
+            <i class="fas fa-users-cog role-icon"></i>
+            <div>Team Leader</div>
+          </div>
+
+          <!-- ✅ PM -->
+          <div class="role-card pm" data-role="pm">
+            <input type="radio" name="role" id="role-pm" value="pm">
+            <i class="fas fa-briefcase role-icon"></i>
+            <div>Project Manager</div>
+          </div>
+
+        </div>
+
+        <input type="email" class="form-control" name="email" placeholder="Email Address" required>
+        <input type="password" class="form-control" name="password" placeholder="Password" required>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+          <i class="fas fa-sign-in-alt me-2"></i> Login Dashboard
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".role-card").forEach(card=>{
+    card.addEventListener("click",()=>{
+      document.querySelectorAll(".role-card").forEach(c=>c.classList.remove("selected"));
+      card.classList.add("selected");
+      document.getElementById("role-"+card.dataset.role).checked=true;
+    });
+  });
+</script>
+
+</body>
+</html>

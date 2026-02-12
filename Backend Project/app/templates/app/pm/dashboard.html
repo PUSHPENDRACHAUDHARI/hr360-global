@@ -1,0 +1,209 @@
+{% extends "app/base4.html" %}
+{% block content %}
+
+<main class="content-wrap">
+
+  <!-- =======================
+       TOP SECTION (NO CHANGE)
+  ======================== -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div style="
+            background: linear-gradient(135deg, #0b7368, #0a8a4a);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+          ">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h2 style="margin: 0; font-weight: 700;">
+              Welcome back, {{ pm_name }}!
+            </h2>
+            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 16px;">
+              Role: Project Manager | Employee ID: {{ pm_id }} | {{ "now"|date:"F d, Y" }}
+            </p>
+          </div>
+          <div class="col-md-4 text-end">
+            <small style="opacity: 0.8;">
+              <i class="fa-solid fa-project-diagram me-1"></i> Managing Projects & Teams
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================
+       PAGE TITLE
+  ======================== -->
+  <div class="d-flex justify-content-between mb-3" style="
+          background: #fff;
+          border: 1px solid #e5e7eb;
+          padding: 10px 15px;
+          border-radius: 4px;
+        ">
+    <div class="page-title">Project Manager Dashboard</div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'project-manager-profile' pm_id %}" class="btn btn-success btn-sm">
+        <i class="fa-solid fa-user me-1"></i> My Profile
+      </a>
+      <a href="{% url 'pm-projects' %}" class="btn btn-success btn-sm">
+        <i class="fa-solid fa-project-diagram me-1"></i> Manage Projects
+      </a>
+    </div>
+  </div>
+
+  <!-- =======================
+       STAT CARDS (REAL DATA)
+  ======================== -->
+  <!-- =======================
+     DASHBOARD CARDS
+======================= -->
+  <div class="row mb-3">
+
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card shadow-sm text-center p-3">
+        <h6 class="text-muted">Total Projects</h6>
+        <h2 class="fw-bold text-success">{{ total_projects }}</h2>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card shadow-sm text-center p-3">
+        <h6 class="text-muted">Active Projects</h6>
+        <h2 class="fw-bold text-primary">{{ active_projects }}</h2>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card shadow-sm text-center p-3">
+        <h6 class="text-muted">Completed Projects</h6>
+        <h2 class="fw-bold text-warning">{{ completed_projects }}</h2>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card shadow-sm text-center p-3">
+        <h6 class="text-muted">Total Tasks</h6>
+        <h2 class="fw-bold text-danger">{{ total_tasks }}</h2>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row mb-3">
+
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card shadow-sm text-center p-3">
+        <h6 class="text-muted">Completed Tasks</h6>
+        <h2 class="fw-bold text-success">{{ completed_tasks }}</h2>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card shadow-sm text-center p-3">
+        <h6 class="text-muted">Pending Tasks</h6>
+        <h2 class="fw-bold text-danger">{{ pending_tasks }}</h2>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card shadow-sm text-center p-3">
+        <h6 class="text-muted">Team Leaders</h6>
+        <h2 class="fw-bold text-warning">{{ total_team_leads }}</h2>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+      <div class="card shadow-sm text-center p-3">
+        <h6 class="text-muted">Employees</h6>
+        <h2 class="fw-bold text-primary">{{ total_employees }}</h2>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =======================
+       GRAPHICAL OVERVIEW
+  ======================== -->
+  <div class="row mb-3">
+
+    <div class="col-lg-6 mb-3">
+      <div class="card p-3">
+        <h6 class="fw-bold mb-2">Project Overview</h6>
+        <canvas id="projectChart" height="120"></canvas>
+      </div>
+    </div>
+
+    <div class="col-lg-6 mb-3">
+      <div class="card p-3">
+        <h6 class="fw-bold mb-2">Task Overview</h6>
+        <canvas id="taskChart" height="120"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =======================
+       HR ANNOUNCEMENTS
+  ======================== -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-success text-white fw-bold">
+          <i class="fa-solid fa-bullhorn me-2"></i> HR Announcements
+        </div>
+
+        <div class="card-body">
+          {% if announcements %}
+          <ul class="list-group list-group-flush">
+            {% for ann in announcements %}
+            <li class="list-group-item">
+              <strong>{{ ann.title }}</strong>
+              <div class="small text-muted">
+                {{ ann.created_at|date:"d M Y" }}
+              </div>
+              <p class="mb-0">{{ ann.message|truncatewords:25 }}</p>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="text-muted text-center mb-0">No announcements available</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- =======================
+     CHART JS
+======================== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  new Chart(document.getElementById('projectChart'), {
+    type: 'doughnut',
+    data: {
+      labels: {{ project_chart.labels | safe }},
+    datasets: [{
+      data: {{ project_chart.data | safe }},
+    backgroundColor: ['#0b7368', '#0a8a4a']
+      }]
+    }
+  });
+
+  new Chart(document.getElementById('taskChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ task_chart.labels | safe }},
+    datasets: [{
+      data: {{ task_chart.data | safe }},
+    backgroundColor: ['#198754', '#dc3545']
+      }]
+    }
+  });
+</script>
+
+{% endblock %}

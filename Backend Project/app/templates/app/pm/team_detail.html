@@ -1,0 +1,120 @@
+{% extends "app/base4.html" %}
+{% block content %}
+
+<main class="content-wrap p-4" style="background:#e6f2f2;">
+
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4"
+         style="background:#ffffff;border-left:5px solid #008080;padding:12px 18px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        <div class="page-title fw-bold text-teal" style="color:#008080;">
+            <i class="fas fa-users me-2"></i> Team Details
+        </div>
+        <a href="javascript:history.back()" class="btn btn-sm btn-outline-teal" style="border-color:#008080;color:#008080;">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- TEAM LEAD DETAILS -->
+    <div class="card shadow-sm mb-4 border-0" style="border-radius:8px;">
+        <div class="card-header bg-teal text-white fw-bold" style="border-radius:8px 8px 0 0; background:#008080;">
+            Team Lead Information
+        </div>
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-4 fw-bold text-teal">Name</div>
+                <div class="col-md-8">{{ lead.employee.first_name }} {{ lead.employee.last_name }}</div>
+
+                <div class="col-md-4 fw-bold text-teal">Email</div>
+                <div class="col-md-8">{{ lead.employee.email }}</div>
+
+                <div class="col-md-4 fw-bold text-teal">Role</div>
+                <div class="col-md-8">Team Leader</div>
+
+                <div class="col-md-4 fw-bold text-teal">Total Projects</div>
+                <div class="col-md-8">{{ projects.count }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECTS -->
+    {% for project in projects %}
+    <div class="card shadow-sm mb-4 border-0" style="border-radius:8px;">
+        <div class="card-header fw-bold text-white" style="background:#006666;border-radius:8px 8px 0 0;">
+            {{ project.project_name }}
+            <span class="badge bg-light text-dark ms-2" style="font-weight:500;">
+                {{ project.project_code }}
+            </span>
+        </div>
+
+        <div class="card-body">
+            <p><b>Duration:</b> {{ project.start_date }} → {{ project.end_date }}</p>
+            <p><b>Priority:</b> {{ project.priority }}</p>
+            <p><b>Description:</b><br>
+                {{ project.description|default:"No description available" }}
+            </p>
+
+            <hr style="border-top:1px solid #008080;">
+
+            <h6 class="fw-bold mb-2 text-teal">
+                <i class="fas fa-user-friends me-1"></i> Team Members
+                <span class="badge bg-teal text-white ms-2">{{ project.team_members.count }}</span>
+            </h6>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-sm align-middle mb-0">
+                    <thead style="background:#008080;color:white;">
+                        <tr>
+                            <th>#</th>
+                            <th>Employee Name</th>
+                            <th>Email</th>
+                            <th>Designation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in project.team_members.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ m.first_name }} {{ m.last_name }}</td>
+                            <td>{{ m.email }}</td>
+                            <td>{{ m.designation }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                No team members assigned
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted text-center">No projects assigned to this team.</p>
+    {% endfor %}
+
+</main>
+
+{% endblock %}
+
+<style>
+/* Teal theme buttons and hover effects */
+.btn-outline-teal:hover {
+    background-color:#008080;
+    color:white;
+    border-color:#008080;
+}
+
+.text-teal {
+    color:#008080 !important;
+}
+
+.badge.bg-teal {
+    background-color:#008080 !important;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #cce6e6;
+}
+</style>

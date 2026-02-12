@@ -1,0 +1,87 @@
+{% extends "app/base4.html" %}
+{% load static %}
+{% block content %}
+
+<main class="content-wrap">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between mb-3"
+         style="background:#fff;border:1px solid #e5e7eb;padding:12px 18px;border-radius:6px;">
+        <div class="page-title">Leave Request Details</div>
+
+        <a href="{% url 'pm-leave-manage' %}" class="btn btn-outline-secondary btn-sm">
+            ← Back
+        </a>
+    </div>
+
+    <!-- DETAIL CARD -->
+    <div style="background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:22px;">
+
+        <div class="row g-3">
+
+            <!-- EMPLOYEE -->
+            <div class="col-md-4 fw-semibold text-muted">Employee</div>
+            <div class="col-md-8">
+                {{ leave.employee.first_name }} {{ leave.employee.last_name }}
+            </div>
+
+            <!-- TEAM LEAD -->
+            <div class="col-md-4 fw-semibold text-muted">Team Lead Status</div>
+            <div class="col-md-8">
+                {% if leave.tl_approved %}
+                    <span class="badge bg-info">Approved by Team Lead</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">Pending at Team Lead</span>
+                {% endif %}
+            </div>
+
+            <!-- HR -->
+            <div class="col-md-4 fw-semibold text-muted">HR Status</div>
+            <div class="col-md-8">
+                {% if leave.status == "approved" %}
+                    <span class="badge bg-success">Approved by HR</span>
+                {% elif leave.status == "rejected" %}
+                    <span class="badge bg-danger">Rejected by HR</span>
+                {% else %}
+                    <span class="badge bg-secondary">Not Processed</span>
+                {% endif %}
+            </div>
+
+            <!-- LEAVE TYPE -->
+            <div class="col-md-4 fw-semibold text-muted">Leave Type</div>
+            <div class="col-md-8">
+                {{ leave.leave_type }}
+            </div>
+
+            <!-- START DATE -->
+            <div class="col-md-4 fw-semibold text-muted">Start Date</div>
+            <div class="col-md-8">
+                {{ leave.start_date }}
+            </div>
+
+            <!-- END DATE -->
+            <div class="col-md-4 fw-semibold text-muted">End Date</div>
+            <div class="col-md-8">
+                {{ leave.end_date }}
+            </div>
+
+            <!-- APPLIED ON -->
+            <div class="col-md-4 fw-semibold text-muted">Applied On</div>
+            <div class="col-md-8">
+                {{ leave.applied_at|date:"d M Y H:i" }}
+            </div>
+
+            <!-- REASON -->
+            <div class="col-md-4 fw-semibold text-muted">Reason</div>
+            <div class="col-md-8">
+                <div style="background:#f9fafb;border:1px solid #e5e7eb;padding:12px;border-radius:6px;">
+                    {{ leave.reason }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+{% endblock %}

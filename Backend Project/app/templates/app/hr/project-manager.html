@@ -1,0 +1,144 @@
+{% extends "app/base.html" %}
+{% block content %}
+
+<main class="content-wrap">
+
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between mb-3"
+        style="background:#fff;border:1px solid #e5e7eb;padding:10px 15px;border-radius:4px;">
+        <div class="page-title">
+            Create Project Manager
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'hr-dashboard' %}" style="background:#0b7368;color:#fff;padding:6px 14px;border-radius:6px;
+                text-decoration:none;font-weight:600;">
+                <i class="fa-solid fa-arrow-left me-1"></i>HR Dashboard
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div id="message-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center fw-semibold mb-3">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Automatically hide messages after 3 seconds
+        setTimeout(function () {
+            const container = document.getElementById('message-container');
+            if (container) {
+                container.style.transition = 'opacity 0.5s';
+                container.style.opacity = '0';
+                setTimeout(() => { container.remove(); }, 500); // Remove from DOM after fade
+            }
+        }, 3000); // 3000ms = 3 seconds
+    </script>
+    {% endif %}
+
+
+    <!-- FORM CARD -->
+    <div class="row">
+        <div class="col-12">
+
+            <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;">
+
+                <!-- CARD HEADER -->
+                <div style="background:#0b7368;color:#fff;padding:14px 18px;
+                    font-size:20px;font-weight:700;border-radius:12px 12px 0 0;">
+                    Project Manager Profile Creation
+                </div>
+
+                <!-- CARD BODY -->
+                <div style="padding:20px;">
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Full Name</label>
+                                <input type="text" name="name" class="form-control" placeholder="Enter Full Name " required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Employee ID</label>
+                                <input type="text" name="employee_id" class="form-control" placeholder="Enter Employee Id" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Contact Number</label>
+                                <input type="text" name="contact" class="form-control" placeholder="Enter Contact Number" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Designation</label>
+                                <input type="text" name="designation" class="form-control" value="Project Manager"
+                                    readonly>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Address</label>
+                                <textarea name="address" rows="2" class="form-control" placeholder="Enter your address"></textarea>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Personal Email</label>
+                                <input type="email" name="personal_email" class="form-control" placeholder="Enter Personal Email" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">
+                                    Official Email (Login ID)
+                                </label>
+                                <input type="email" name="official_email" class="form-control" placeholder="Enter Official Email" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Education</label>
+                                <input type="text" name="education" class="form-control" placeholder="Enter Education">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Salary Package (₹)</label>
+                                <input type="number" step="0.01" name="package" class="form-control" placeholder="Enter Your Annual Package">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Password</label>
+                                <input type="password" name="password" class="form-control" placeholder="Enter Passsword" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Confirm Password</label>
+                                <input type="password" name="confirm_password" class="form-control" placeholder="Confirm Passsword" required>
+                            </div>
+
+                        </div>
+
+                        <!-- ACTION BUTTON -->
+                        <div class="text-end mt-4">
+                            <button type="submit" style="background:#0b7368;color:#fff;border:none;
+                             padding:10px 24px;border-radius:8px;
+                             font-weight:600;">
+                                <i class="fa-solid fa-user-check me-1"></i>
+                                Create Profile & Send Access
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+{% endblock %}

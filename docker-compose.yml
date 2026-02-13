@@ -33,11 +33,12 @@ services:
     ports:
       - "8878:80"
     volumes:
-      - ./Backend Project/staticfiles:/static
+      # Mount collected static files
+      - ./Backend Project/staticfiles:/staticfiles
+      # Use our custom nginx config
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - backend
 
 volumes:
   dbdata:
-

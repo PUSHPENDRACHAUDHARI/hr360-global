@@ -4,33 +4,48 @@ import pymysql
 
 pymysql.install_as_MySQLdb()
 
+# --------------------------------------------------
+# BASE
+# --------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ===============================
-# SECURITY SETTINGS
-# ===============================
-
+# --------------------------------------------------
+# SECURITY
+# --------------------------------------------------
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-change-this")
 
-DEBUG = False   # IMPORTANT: False in production
+DEBUG = True   # PRODUCTION
 
 ALLOWED_HOSTS = [
-    "31.97.203.68",
     "hr360.kavyainfoweb.com",
-    "localhost",
-    "127.0.0.1",
+    "31.97.203.68",
 ]
 
+# --------------------------------------------------
+# CSRF & PROXY (🔥 FIXED)
+# --------------------------------------------------
 CSRF_TRUSTED_ORIGINS = [
-    "http://31.97.203.68",
-    "http://31.97.203.68:8878",
-    "http://hr360.kavyainfoweb.com",
+    "https://hr360.kavyainfoweb.com",
 ]
 
-# ===============================
-# APPLICATIONS
-# ===============================
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+CSRF_USE_SESSIONS = True
+
+# Cookies (REQUIRED for double nginx + HTTPS)
+CSRF_COOKIE_DOMAIN = "hr360.kavyainfoweb.com"
+SESSION_COOKIE_DOMAIN = "hr360.kavyainfoweb.com"
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "None"
+
+# --------------------------------------------------
+# APPLICATIONS
+# --------------------------------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -38,9 +53,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "app",   # your main app
+    "app",
 ]
 
+# --------------------------------------------------
+# MIDDLEWARE
+# --------------------------------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -51,8 +69,15 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# --------------------------------------------------
+# URLS / WSGI
+# --------------------------------------------------
 ROOT_URLCONF = "hrms.urls"
+WSGI_APPLICATION = "hrms.wsgi.application"
 
+# --------------------------------------------------
+# TEMPLATES
+# --------------------------------------------------
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -69,42 +94,53 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "hrms.wsgi.application"
-
-# ===============================
+# --------------------------------------------------
 # DATABASE (Docker MySQL)
-# ===============================
-
+# --------------------------------------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("MYSQL_DATABASE", "hr360"),
-        "USER": os.environ.get("MYSQL_USER", "hr360user"),
-        "PASSWORD": os.environ.get("MYSQL_PASSWORD", "Hr360@123"),
-        "HOST": "db",   # IMPORTANT for Docker
+        "NAME": os.environ.get("MYSQL_DATABASE"),
+        "USER": os.environ.get("MYSQL_USER"),
+        "PASSWORD": os.environ.get("MYSQL_PASSWORD"),
+        "HOST": "db",      # 🔥 DOCKER SERVICE NAME
         "PORT": "3306",
     }
 }
 
-# ===============================
-# STATIC FILES (IMPORTANT FIX)
-# ===============================
-
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "app/static"),
+# --------------------------------------------------
+# PASSWORD VALIDATION
+# --------------------------------------------------
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# ===============================
-# DEFAULT SETTINGS
-# ===============================
-
+# --------------------------------------------------
+# I18N
+# --------------------------------------------------
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
+# --------------------------------------------------
+# STATIC & MEDIA
+# --------------------------------------------------
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "app/static",
+]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# --------------------------------------------------
+# DEFAULT
+# --------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

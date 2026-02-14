@@ -23,7 +23,7 @@ services:
       - ./Backend Project:/app
       - ./Backend Project/staticfiles:/app/staticfiles
     ports:
-      - "8877:8000"
+      - "8000"
     depends_on:
       - db
 
